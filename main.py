@@ -200,33 +200,42 @@ async def add_no_cache_headers(request, call_next):
     return response
 
 # Servir Frontend Estático
-BASE_DIR = Path(__file__).parent
+BASE_DIR = Path(__file__).resolve().parent
 if (BASE_DIR / "css").exists():
     app.mount("/css", StaticFiles(directory=str(BASE_DIR / "css")), name="css")
 if (BASE_DIR / "js").exists():
     app.mount("/js", StaticFiles(directory=str(BASE_DIR / "js")), name="js")
 
+@app.head("/", include_in_schema=False)
 @app.get("/", summary="Página Principal de la Tienda", include_in_schema=False)
 async def serve_index():
     index_file = BASE_DIR / "index.html"
     if index_file.exists():
-        return FileResponse(str(index_file), headers={"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"})
+        return FileResponse(str(index_file), media_type="text/html", headers={"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"})
     return {"message": "Cyber Neón Store API v2.0 en ejecución"}
 
+@app.head("/index.html", include_in_schema=False)
 @app.get("/index.html", include_in_schema=False)
 async def serve_index_html():
     return await serve_index()
 
+@app.head("/admin", include_in_schema=False)
 @app.get("/admin", summary="Panel Administrativo", include_in_schema=False)
 async def serve_admin():
     admin_file = BASE_DIR / "admin.html"
     if admin_file.exists():
-        return FileResponse(str(admin_file), headers={"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"})
+        return FileResponse(str(admin_file), media_type="text/html", headers={"Cache-Control": "no-store, no-cache, must-revalidate, max-age=0"})
     return {"message": "Panel Admin no encontrado"}
 
+@app.head("/admin.html", include_in_schema=False)
 @app.get("/admin.html", include_in_schema=False)
 async def serve_admin_html():
     return await serve_admin()
+
+@app.head("/health", include_in_schema=False)
+@app.get("/health", include_in_schema=False)
+async def health_check():
+    return {"status": "ok", "db": app.state.db_pool is not None}
 
 
 

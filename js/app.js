@@ -1444,6 +1444,10 @@ function escaparHTML(str) {
     }[tag] || tag));
 }
 
-// Inicialización
-window.addEventListener('DOMContentLoaded', cargarCatalogo);
+// Inicialización segura e inmediata
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => cargarCatalogo(false));
+} else {
+    cargarCatalogo(false);
+}
 
