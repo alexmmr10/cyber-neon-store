@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>⚡ CYBER NEÓN - Catálogo & Tienda Oficial</title>
+    <meta name="description" content="Tienda oficial de ropa Techwear y Cyberpunk. Envíos directos y confirmación automatizada por WhatsApp.">
+    
+    <!-- Fuentes Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    
+    <!-- Estilos Modulares con Cache Busting -->
+    <link rel="stylesheet" href="css/styles.css?v=5.0.0">
+</head>
+
+<body>
+    <div class="app-wrapper">
+
+        <!-- Barra Superior de Beneficios -->
+        <aside class="announcement-bar" aria-label="Beneficios">
+            <div class="announcement-item">
+                <span>⚡</span> Envíos <span class="highlight">Gratis</span> en compras mayores a $100 USD
+            </div>
+            <div class="announcement-item">
+                <span>🎟️</span> Usa el cupón <span class="highlight">NEON10</span> para 10% OFF
+            </div>
+            <div class="announcement-item">
+                <span>📲</span> Ticket oficial despachado a tu <span class="highlight">WhatsApp</span>
+            </div>
+        </aside>
+
+        <!-- Header Principal -->
+        <header>
+            <div class="brand-container">
+                <div class="brand-logo" aria-hidden="true">⚡</div>
+                <div class="brand-title">
+                    <h1>CYBER NEÓN</h1>
+                    <span class="brand-subtitle">Techwear & Dark Fashion</span>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <div class="status-badge" id="server-status-badge" title="Estado de la conexión">
+                    <span class="status-dot" id="server-status-dot"></span>
+                    <span id="server-status-text">Conectando...</span>
+                </div>
+                <button class="btn-admin" style="background: rgba(0, 240, 255, 0.1); border-color: var(--neon-cyan); color: var(--neon-cyan); cursor: pointer;" onclick="cargarCatalogo(true)" title="Sincronizar catálogo con Azure">
+                    <span>🔄</span> Sincronizar
+                </button>
+                <a href="admin.html" class="btn-admin" id="btn-admin-link">
+                    <span>⚡</span> Panel Admin
+                </a>
+            </div>
+        </header>
+
+        <!-- Barra de Búsqueda y Filtros de Categoría -->
+        <section class="controls-panel" aria-label="Filtros del catálogo">
+            <div class="search-and-sort">
+                <div class="search-box">
+                    <span class="search-icon" aria-hidden="true">🔍</span>
+                    <input type="text" id="buscador" placeholder="Buscar prenda por nombre, color, talla o SKU..." aria-label="Buscar en el catálogo" oninput="filtrarYMostrar()">
+                    <button class="clear-search-btn" id="btn-clear-search" onclick="limpiarBuscador()" aria-label="Limpiar búsqueda">✕</button>
+                </div>
+
+                <select class="sort-select" id="ordenador" onchange="filtrarYMostrar()" aria-label="Ordenar catálogo">
+                    <option value="default">✨ Orden: Destacados</option>
+                    <option value="precio-asc">💵 Precio: Menor a Mayor</option>
+                    <option value="precio-desc">💎 Precio: Mayor a Menor</option>
+                    <option value="nombre-asc">🔤 Nombre: A - Z</option>
+                    <option value="stock-desc">📦 Mayor Stock Disponible</option>
+                </select>
+            </div>
+
+            <div class="category-tabs" id="category-tabs" role="tablist">
+                <button class="tab-btn active" role="tab" data-category="TODOS" onclick="filtrarCategoria('TODOS', this)">⚡ Todos los Artículos</button>
+                <button class="tab-btn" role="tab" data-category="HOODIES" onclick="filtrarCategoria('HOODIES', this)">🧥 Hoodies & Chaquetas</button>
+                <button class="tab-btn" role="tab" data-category="CAMISETAS" onclick="filtrarCategoria('CAMISETAS', this)">👕 Camisetas & Tops</button>
+                <button class="tab-btn" role="tab" data-category="PANTALONES" onclick="filtrarCategoria('PANTALONES', this)">👖 Pantalones & Cargo</button>
+                <button class="tab-btn" role="tab" data-category="VESTIDOS" onclick="filtrarCategoria('VESTIDOS', this)">👗 Vestidos</button>
+                <button class="tab-btn" role="tab" data-category="ACCESORIOS" onclick="filtrarCategoria('ACCESORIOS', this)">🧢 Accesorios & Gorras</button>
+            </div>
+        </section>
+
+        <!-- Layout Principal: Catálogo + Sidebar de Carrito -->
+        <main class="main-layout">
+
+            <!-- Catálogo de Productos -->
+            <section class="catalogo-section" aria-label="Prendas de la tienda">
+                <div class="catalogo-header-info">
+                    <span id="contador-productos">Cargando catálogo...</span>
+                    <span id="filtro-actual-badge" style="color: var(--neon-cyan); font-weight:600;"></span>
+                </div>
+
+                <div class="catalogo-grid" id="contenedor-catalogo">
+                    <!-- Tarjetas generadas dinámicamente -->
+                </div>
+            </section>
+
+            <!-- Sidebar del Carrito -->
+            <aside class="carrito-sidebar" id="carrito-sidebar" aria-label="Carrito de compras">
+                <div class="carrito-header">
+                    <h2>
+                        <span aria-hidden="true">🛒</span> Tu Carrito
+                        <span class="cart-badge-count" id="cart-badge-count">0</span>
+                    </h2>
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <button class="btn-clear-cart" onclick="vaciarCarrito()">Vaciar</button>
+                        <button class="modal-close-btn" style="display:none;" id="btn-close-mobile-cart" onclick="toggleMobileCart()">✕</button>
+                    </div>
+                </div>
+
+                <!-- Barra de envío gratis -->
+                <div class="shipping-meter">
+                    <div class="shipping-meter-text">
+                        <span id="shipping-status-msg">Agrega $100.00 para <b>Envío Gratis</b></span>
+                        <span id="shipping-percentage">0%</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" id="shipping-progress-fill" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <!-- Lista de Artículos -->
+                <div class="cart-items-container" id="items-carrito">
+                    <div class="empty-cart-state">
+                        <div class="empty-cart-icon">🛍️</div>
+                        <p>Tu carrito está vacío</p>
+                        <span style="font-size: 0.75rem; color: var(--text-muted);">¡Explora la tienda y agrega tus prendas favoritas!</span>
+                    </div>
+                </div>
+
+                <!-- Cupón de Descuento -->
+                <div class="coupon-wrapper">
+                    <input type="text" class="coupon-input" id="coupon-code" placeholder="CUPÓN (ej. NEON10)" aria-label="Código de descuento">
+                    <button class="btn-coupon" onclick="aplicarCupon()">Aplicar</button>
+                </div>
+                <div id="active-coupon-container"></div>
+
+                <!-- Resumen de Costos -->
+                <div class="cart-summary">
+                    <div class="summary-row">
+                        <span>Subtotal:</span>
+                        <span id="cart-subtotal">$0.00</span>
+                    </div>
+                    <div class="summary-row" id="row-descuento" style="display: none; color: var(--neon-green);">
+                        <span>Descuento:</span>
+                        <span id="cart-discount">-$0.00</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Envío:</span>
+                        <span id="cart-shipping">$0.00</span>
+                    </div>
+                    <div class="summary-row total-row">
+                        <span>Total:</span>
+                        <span class="final-price">$<span id="total">0.00</span></span>
+                    </div>
+                </div>
+
+                <!-- Input WhatsApp para el Checkout -->
+                <div class="whatsapp-input-group">
+                    <label for="telefono">📱 WhatsApp (para recibir el Ticket Oficial):</label>
+                    <div class="phone-input-wrapper">
+                        <select class="country-select" id="pais-prefijo" aria-label="Prefijo de país">
+                            <option value="+593">🇪🇨 +593</option>
+                            <option value="+57">🇨🇴 +57</option>
+                            <option value="+52">🇲🇽 +52</option>
+                            <option value="+51">🇵🇪 +51</option>
+                            <option value="+1">🇺🇸 +1</option>
+                            <option value="+34">🇪🇸 +34</option>
+                        </select>
+                        <input type="tel" id="telefono" class="phone-input" placeholder="099xxxxxxx" required aria-label="Número de WhatsApp">
+                    </div>
+                    <small style="color: var(--text-muted); font-size: 0.72rem; display: block; margin-top: 4px;">
+                        ⚡ El ticket se despacha automáticamente a tu WhatsApp vía n8n & Meta Cloud API.
+                    </small>
+                </div>
+
+                <!-- Botones de Acción -->
+                <button class="btn-comprar" onclick="procesarCompra()" id="btn-procesar-compra">
+                    <span>⚡</span> Pagar y Recibir Ticket
+                </button>
+                <button class="btn-direct-whatsapp" onclick="checkoutDirectoWhatsApp()" id="btn-direct-whatsapp">
+                    <span>💬</span> Pedir por Chat Directo
+                </button>
+            </aside>
+
+        </main>
+
+        <!-- Botón Flotante para Móviles (Carrito) -->
+        <button class="mobile-cart-btn" onclick="toggleMobileCart()" aria-label="Abrir carrito móvil">
+            <span>🛒</span> Ver Carrito (<span id="mobile-cart-count">0</span>)
+        </button>
+
+        <!-- Botón Flotante del Asistente IA (Cyber Stylist) -->
+        <button class="ai-toggle-btn" onclick="toggleAIChat()" id="btn-ai-toggle" aria-label="Abrir Asistente IA de Estilo">
+            <span style="font-size: 1.2rem;">🤖</span>
+            <span>Stylist IA</span>
+        </button>
+
+        <!-- Ventana de Chat del Asistente IA -->
+        <div class="ai-chat-window" id="ai-chat-window" role="dialog" aria-modal="false" aria-label="Asistente de Moda IA">
+            <div class="ai-chat-header">
+                <div class="ai-header-info">
+                    <div class="ai-avatar">🤖</div>
+                    <div>
+                        <div class="ai-header-title">Cyber Stylist AI</div>
+                        <div class="ai-header-status" id="ai-header-status">● ChatGPT Sol Activo</div>
+                    </div>
+                </div>
+                <button class="modal-close-btn" style="position: static; width: 28px; height: 28px;" onclick="toggleAIChat()" aria-label="Cerrar chat">✕</button>
+            </div>
+
+            <!-- Barra de Notificación Permanente del Motor IA Activo -->
+            <div id="ai-engine-status-bar" style="background: rgba(0, 255, 159, 0.12); border-bottom: 1px solid rgba(0, 255, 159, 0.3); padding: 6px 14px; font-size: 0.72rem; font-family: 'JetBrains Mono', monospace; color: #00ff9f; display: flex; align-items: center; justify-content: space-between;">
+                <span style="display: flex; align-items: center; gap: 6px;">
+                    <span style="width: 7px; height: 7px; background: #00ff9f; border-radius: 50%; box-shadow: 0 0 8px #00ff9f; animation: dotPulse 1.5s infinite;"></span>
+                    <span>IA: <b id="ai-active-engine-label">ChatGPT Sol (gpt-5.6-sol-1)</b></span>
+                </span>
+                <span style="font-size: 0.65rem; color: #fff; background: rgba(0,0,0,0.5); padding: 2px 7px; border-radius: 4px; border: 1px solid rgba(0, 255, 159, 0.2);">Microsoft Foundry</span>
+            </div>
+
+            <div class="ai-chat-body" id="ai-chat-body">
+                <!-- Mensajes generados dinámicamente -->
+            </div>
+
+            <div class="ai-quick-chips" aria-label="Sugerencias rápidas">
+                <button class="ai-chip" onclick="usarChipIA('Arma un outfit completo para fiesta de noche')">✨ Outfit de Noche</button>
+                <button class="ai-chip" onclick="usarChipIA('¿Qué outfit me armas por menos de 100 dólares?')">💸 Menos de $100</button>
+                <button class="ai-chip" onclick="usarChipIA('¿Qué cupones de descuento están activos?')">🎟️ Cupones Activos</button>
+                <button class="ai-chip" onclick="usarChipIA('¿Con qué combina el Hoodie Cyberpunk Oversize?')">🧥 Combinar Hoodie</button>
+                <button class="ai-chip" onclick="usarChipIA('¿Qué prendas tienes en talla M?')">📏 Talla M</button>
+            </div>
+
+            <div class="ai-chat-footer">
+                <form class="ai-input-form" onsubmit="manejarEnvioChatIA(event)">
+                    <input type="text" class="ai-input-field" id="ai-chat-input" placeholder="Pregunta sobre combinaciones, outfits..." autocomplete="off">
+                    <button type="submit" class="btn-ai-send" aria-label="Enviar consulta">⚡</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal de Vista Rápida (Quick View) -->
+        <div class="modal-overlay" id="quick-view-modal" onclick="cerrarModalFuera(event)" role="dialog" aria-modal="true">
+            <div class="modal-card">
+                <button class="modal-close-btn" onclick="cerrarQuickView()" aria-label="Cerrar modal">✕</button>
+                <div class="modal-body" id="quick-view-content">
+                    <!-- Contenido dinámico -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal del Ticket de Compra Digital Oficial -->
+        <div class="modal-overlay" id="ticket-modal" onclick="cerrarModalFuera(event)" role="dialog" aria-modal="true">
+            <div class="ticket-modal-card" id="ticket-modal-card">
+                <button class="modal-close-btn" onclick="cerrarTicketModal()" aria-label="Cerrar ticket">✕</button>
+                <div id="ticket-modal-content">
+                    <!-- Contenido dinámico del ticket -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Notificaciones Cyber-Toast -->
+        <div class="toast-container" id="toast-container" aria-live="polite"></div>
+
+        <!-- Pie de Página -->
+        <footer>
+            <p>⚡ <b>CYBER NEÓN STORE</b> &copy; 2026 • Techwear & Dark Fashion</p>
+            <p style="font-size: 0.75rem; margin-top: 6px; color: var(--text-muted);">
+                Desarrollado con arquitectura moderna, FastAPI, PostgreSQL & Webhook Automatizado n8n (Meta Cloud API).
+            </p>
+        </footer>
+
+    </div>
+
+    <!-- Scripts de la Aplicación con Cache Busting -->
+    <script src="js/app.js?v=5.0.0"></script>
+</body>
+
+</html>
