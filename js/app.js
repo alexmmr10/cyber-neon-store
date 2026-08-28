@@ -663,13 +663,16 @@ function actualizarInterfazCarrito() {
     if (badgeCount) badgeCount.innerText = totalItems;
     if (mobileCount) mobileCount.innerText = totalItems;
 
+    const btnComprar = document.getElementById('btn-procesar-compra');
+    const btnWhatsApp = document.getElementById('btn-direct-whatsapp');
+
     if (carrito.length === 0) {
         if (divItems) {
             divItems.innerHTML = `
                 <div class="empty-cart-state">
                     <div class="empty-cart-icon">🛍️</div>
                     <p>Tu carrito está vacío</p>
-                    <span style="font-size: 0.75rem; color: var(--text-muted);">¡Explora la tienda y agrega tus prendas favoritas!</span>
+                    <span style="font-size: 0.75rem; color: var(--text-muted);">¡Haz clic en "+ Agregar" en alguna prenda para comprar!</span>
                 </div>
             `;
         }
@@ -681,7 +684,23 @@ function actualizarInterfazCarrito() {
         if (shippingMsg) shippingMsg.innerHTML = `Agrega $${METAS_ENVIO_GRATIS.toFixed(2)} para <b>Envío Gratis</b>`;
         const rowDesc = document.getElementById('row-descuento');
         if (rowDesc) rowDesc.style.display = 'none';
+
+        if (btnComprar) {
+            btnComprar.style.opacity = '0.55';
+            btnComprar.innerHTML = `<span>🛒</span> Carrito Vacío (Agrega una prenda)`;
+        }
+        if (btnWhatsApp) {
+            btnWhatsApp.style.opacity = '0.55';
+        }
         return;
+    }
+
+    if (btnComprar) {
+        btnComprar.style.opacity = '1';
+        btnComprar.innerHTML = `<span>⚡</span> Pagar y Recibir Ticket`;
+    }
+    if (btnWhatsApp) {
+        btnWhatsApp.style.opacity = '1';
     }
 
     if (divItems) divItems.innerHTML = '';
