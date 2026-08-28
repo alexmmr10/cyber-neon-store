@@ -1656,3 +1656,170 @@ footer {
     40% { transform: scale(1); opacity: 1; box-shadow: 0 0 8px var(--neon-cyan); }
 }
 
+/* ==========================================================================
+   ESTILOS DE IMPRESIÓN OFICIAL (TICKET ÚNICO Y LIMPIO)
+   ========================================================================== */
+@media print {
+    /* Ocultar fondo y elementos ajenos al ticket */
+    body > *:not(#ticket-modal),
+    .announcement-bar,
+    header,
+    .controls-panel,
+    .main-layout,
+    .mobile-cart-btn,
+    .ai-toggle-btn,
+    .ai-chat-window,
+    .toast-container,
+    footer,
+    #quick-view-modal,
+    .modal-close-btn,
+    .ticket-actions,
+    .ticket-integration-alert {
+        display: none !important;
+        visibility: hidden !important;
+    }
+
+    /* Formato de página y contenedor */
+    @page {
+        size: A4 portrait;
+        margin: 10mm 15mm;
+    }
+
+    html, body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        min-height: auto !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+
+    .app-wrapper {
+        display: block !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    #ticket-modal {
+        position: static !important;
+        display: block !important;
+        background: transparent !important;
+        backdrop-filter: none !important;
+        padding: 0 !important;
+        margin: 0 auto !important;
+        width: 100% !important;
+        max-width: 600px !important;
+        box-shadow: none !important;
+        animation: none !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    .ticket-modal-card {
+        position: static !important;
+        background: #ffffff !important;
+        color: #000000 !important;
+        border: 2px solid #000000 !important;
+        border-radius: 8px !important;
+        box-shadow: none !important;
+        padding: 24px !important;
+        margin: 0 auto !important;
+        width: 100% !important;
+        max-width: 560px !important;
+        max-height: none !important;
+        overflow: visible !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+
+    .ticket-brand {
+        color: #000000 !important;
+        font-size: 1.4rem !important;
+    }
+
+    .ticket-header {
+        border-bottom: 2px dashed #222222 !important;
+        padding-bottom: 14px !important;
+        margin-bottom: 14px !important;
+    }
+
+    .ticket-badge-success {
+        background: #f0fdf4 !important;
+        color: #15803d !important;
+        border: 1px solid #15803d !important;
+    }
+
+    .ticket-meta-grid {
+        background: #f8fafc !important;
+        border: 1px solid #e2e8f0 !important;
+        color: #000000 !important;
+        padding: 10px !important;
+        margin-bottom: 14px !important;
+    }
+
+    .ticket-meta-item .label {
+        color: #64748b !important;
+    }
+
+    .ticket-meta-item .value {
+        color: #0f172a !important;
+    }
+
+    .ticket-meta-item .value.highlight {
+        color: #0f172a !important;
+    }
+
+    .ticket-table {
+        color: #000000 !important;
+        margin-bottom: 14px !important;
+    }
+
+    .ticket-table th {
+        color: #475569 !important;
+        border-bottom: 2px solid #0f172a !important;
+        font-weight: 700 !important;
+    }
+
+    .ticket-table td {
+        color: #000000 !important;
+        border-bottom: 1px solid #e2e8f0 !important;
+    }
+
+    .ticket-table td b {
+        color: #000000 !important;
+    }
+
+    .ticket-totals-section {
+        background: #f8fafc !important;
+        border: 1px solid #e2e8f0 !important;
+        color: #000000 !important;
+        padding: 12px !important;
+        margin-bottom: 16px !important;
+    }
+
+    .ticket-total-row {
+        color: #475569 !important;
+    }
+
+    .ticket-total-final {
+        color: #000000 !important;
+        border-top: 2px solid #0f172a !important;
+    }
+
+    .ticket-total-final .amount {
+        color: #0f172a !important;
+        font-size: 1.25rem !important;
+    }
+
+    .ticket-barcode-lines {
+        color: #000000 !important;
+        letter-spacing: 3px !important;
+    }
+
+    .ticket-barcode-number {
+        color: #475569 !important;
+    }
+}
+
+
