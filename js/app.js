@@ -110,6 +110,11 @@ let productosGlobales = [];
 let carrito = JSON.parse(localStorage.getItem('cyber_neon_cart') || '[]');
 let categoriaSeleccionada = 'TODOS';
 let cuponActivo = null;
+
+// Configuración de Envíos y Tarifas
+const METAS_ENVIO_GRATIS = 100.0;
+const COSTO_ENVIO_ESTANDAR = 5.0;
+
 // Configuración de API (Local o Producción en la nube)
 const API_BASE_URL = (window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost') 
     ? 'http://127.0.0.1:8000' 
@@ -1086,15 +1091,15 @@ async function procesarCompra() {
     if (telefono.startsWith('0')) telefono = telefono.substring(1);
     const telefonoCompleto = prefijo + telefono;
 
-    const total = parseFloat(document.getElementById('total').innerText);
     let subtotal = 0;
-    carrito.forEach(i => subtotal += (i.cantidad * i.precio_unitario));
+    carrito.forEach(i => subtotal += (i.cantidad * parseFloat(i.precio_unitario || 0)));
 
     let descuento = 0;
     if (cuponActivo && cuponActivo.tipo === 'porcentaje') {
         descuento = subtotal * cuponActivo.valor;
     }
     const envio = subtotal >= METAS_ENVIO_GRATIS ? 0 : COSTO_ENVIO_ESTANDAR;
+    const total = Math.max(0, subtotal - descuento + envio);
     const itemsRespaldo = [...carrito];
 
     const payload = {
@@ -1109,7 +1114,7 @@ async function procesarCompra() {
         items: carrito.map(i => ({
             sku: i.sku,
             cantidad: i.cantidad,
-            precio_unitario: i.precio_unitario,
+            precio_unitario: parseFloat(i.precio_unitario || 0),
             nombre: i.nombre || i.sku,
             talla: i.talla || "-",
             color: i.color || "-"
